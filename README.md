@@ -30,7 +30,6 @@ A production-ready Node.js server boilerplate built with **Express.js** and **Mo
 - 🔄 **CORS** — Cross-Origin Resource Sharing configured
 
 ## 📂 Project Structure
-
 server-boilerplate/
 ├── src/
 │ ├── config/
