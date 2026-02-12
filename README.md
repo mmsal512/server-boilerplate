@@ -8,7 +8,7 @@
 [![Docker](https://img.shields.io/badge/Docker-29.2-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-OverviewA production-ready server boilerplate that deploys a complete stack of applications behind Traefik reverse proxy with automatic SSL, multi-layer security hardening, VPN access, and system optimizations — all configured through a single .env file.Designed for Ubuntu 24.04 LTS servers with 2+ vCPUs and 8GB+ RAM.Architectureمقتطف الرمزgraph TD
+graph TD
     User((Internet)) --> Cloudflare
     Cloudflare --> Firewall[UFW Firewall + CrowdSec]
     Firewall --> Traefik[Traefik Reverse Proxy]
@@ -23,4 +23,11 @@ OverviewA production-ready server boilerplate that deploys a complete stack of a
     
     Tailscale[Tailscale VPN] -.->|Secure Access| SSH
     Tailscale -.->|Internal Access| Portainer
-What's IncludedApplicationsServiceDescriptionSubdomainn8nWorkflow automationdomain.comOdoo 16ERP system + PostgreSQLodoo.domain.comEvolution APIWhatsApp integration + PostgreSQL + Redisevo.domain.comNext.jsFrontend applicationnext.domain.comPortainerDocker management UIportainer.domain.comGlancesReal-time system monitoringmonitor.domain.com
+
+    Service,Description,Subdomain
+n8n,Workflow automation,domain.com
+Odoo 16,ERP system + PostgreSQL,odoo.domain.com
+Evolution API,WhatsApp integration + PostgreSQL + Redis,evo.domain.com
+Next.js,Frontend application,next.domain.com
+Portainer,Docker management UI,portainer.domain.com
+Glances,Real-time system monitoring,monitor.domain.com
