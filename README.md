@@ -91,6 +91,7 @@ Edit the .env file with your configuration (see Environment Variables).
 
 🔑 Environment Variables
 Create a .env file in the root directory with the following variables:
+
 # Server
 PORT=5000
 NODE_ENV=development
