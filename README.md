@@ -81,5 +81,11 @@ Before you begin, ensure you have the following installed:
 
 Install dependencies
 
-Bash
 npm install
+
+Set up environment variables
+
+cp .env.example .env
+
+Edit the .env file with your configuration (see Environment Variables).
+
