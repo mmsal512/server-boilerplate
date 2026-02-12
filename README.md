@@ -80,5 +80,4 @@ Before you begin, ensure you have the following installed:
    cd server-boilerplate
 
 Install dependencies
-
 npm install
