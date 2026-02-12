@@ -78,3 +78,7 @@ Before you begin, ensure you have the following installed:
    ```bash
    git clone https://github.com/mmsal512/server-boilerplate.git
    cd server-boilerplate
+
+Install dependencies
+
+npm install
