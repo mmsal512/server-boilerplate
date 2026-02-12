@@ -62,3 +62,20 @@ server-boilerplate/
 ├── index.js # Server entry point
 ├── package.json
 └── package-lock.json
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js** (v16 or higher)
+- **npm** or **yarn**
+- **MongoDB** (local or Atlas cloud instance)
+- **Cloudinary account** (for file uploads)
+
+## 🛠️ Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/mmsal512/server-boilerplate.git
+   cd server-boilerplate
