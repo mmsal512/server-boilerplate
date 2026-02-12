@@ -30,3 +30,35 @@ A production-ready Node.js server boilerplate built with **Express.js** and **Mo
 - 🔄 **CORS** — Cross-Origin Resource Sharing configured
 
 ## 📂 Project Structure
+
+server-boilerplate/
+├── src/
+│ ├── config/
+│ │ └── db.js # MongoDB connection configuration
+│ ├── controllers/
+│ │ └── auth.controller.js # Authentication controller
+│ ├── middlewares/
+│ │ ├── auth.middleware.js # JWT authentication middleware
+│ │ ├── multer.middleware.js # File upload middleware
+│ │ └── validate.middleware.js # Request validation middleware
+│ ├── models/
+│ │ └── user.model.js # User Mongoose model
+│ ├── routes/
+│ │ └── auth.route.js # Authentication routes
+│ ├── services/
+│ │ ├── cloudinary.service.js # Cloudinary upload service
+│ │ └── email.service.js # Email/OTP service
+│ ├── utils/
+│ │ ├── ApiError.js # Custom API error class
+│ │ ├── ApiResponse.js # Standardized API response
+│ │ ├── asyncHandler.js # Async error wrapper
+│ │ ├── generateTokens.js # JWT token generation
+│ │ └── helper.js # Helper/utility functions
+│ ├── validations/
+│ │ └── auth.validation.js # Auth input validation schemas
+│ └── app.js # Express app setup
+├── .env.example # Environment variables template
+├── .gitignore
+├── index.js # Server entry point
+├── package.json
+└── package-lock.json
