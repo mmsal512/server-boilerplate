@@ -1,0 +1,23 @@
+filenames:
+  - /var/log/auth.log
+  - /var/log/syslog
+labels:
+  type: syslog
+---
+source: docker
+container_name:
+  - traefik_gateway
+labels:
+  type: traefik
+---
+source: docker
+container_name:
+  - odoo-app
+labels:
+  type: odoo
+---
+source: docker
+container_name:
+  - db-odoo
+labels:
+  type: pgsql
