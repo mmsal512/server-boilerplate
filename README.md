@@ -1,256 +1,373 @@
-<div align="center">
+# 🚀 Server Boilerplate — Production Stack in One Command
 
-# Server Boilerplate
+### سكربت نشر كامل لبيئة إنتاج مُحصّنة
 
-### One-command full-stack server deployment with Docker & security hardening
-
-[![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04_LTS-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)](https://ubuntu.com)
-[![Docker](https://img.shields.io/badge/Docker-29.2-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-
-<br>
-
-git clone https://github.com/mmsal512/server-boilerplate.git cd server-boilerplate cp .env.example .env && nano .env sudo bash setup.sh
-
-
-</div>
+> **Traefik + n8n + Odoo 16 + Evolution API + Next.js + Portainer + Glances**
+> **مع: CrowdSec + ClamAV + UFW + SSH Hardening + Tailscale VPN**
+> متوافق مع: **Ubuntu 24.04 LTS**
 
 ---
 
-## Overview
+## 📋 جدول المحتويات
 
-A production-ready server boilerplate that deploys a complete stack of applications behind Traefik reverse proxy with automatic SSL, multi-layer security hardening, VPN access, and system optimizations — all configured through a single `.env` file.
-
-Designed for **Ubuntu 24.04 LTS** servers with **2+ vCPUs** and **8GB+ RAM**.
+- [نظرة عامة](#-نظرة-عامة)
+- [المعمارية](#-المعمارية)
+- [المميزات](#-المميزات)
+- [المتطلبات](#-المتطلبات)
+- [البنية والملفات](#-البنية-والملفات)
+- [التثبيت والاستخدام](#-التثبيت-والاستخدام)
+- [المتغيرات القابلة للتعديل](#-المتغيرات-القابلة-للتعديل)
+- [تفاصيل المكونات](#-تفاصيل-المكونات)
+- [موارد الحاويات](#-موارد-الحاويات)
+- [المهام المجدولة](#-المهام-المجدولة-cron-jobs)
+- [ما بعد التثبيت](#-ما-بعد-التثبيت)
+- [استكشاف الأخطاء](#-استكشاف-الأخطاء)
+- [الأمان](#-ملاحظات-أمنية)
+- [المساهمة](#-المساهمة)
+- [الرخصة](#-الرخصة)
 
 ---
 
-## Architecture
+## 🔭 نظرة عامة
 
-                Internet
-                   │
-              ┌────▼────┐
-              │Cloudflare│
-              └────┬────┘
-                   │
-          ┌────────▼────────┐
-          │   UFW Firewall  │ ← Cloudflare-only HTTP/HTTPS
-          │   CrowdSec IDS  │ ← Auto-ban attackers
-          └────────┬────────┘
-                   │
-          ┌────────▼────────┐
-          │     Traefik     │ ← Auto SSL (Let's Encrypt)
-          │  Reverse Proxy  │
-          └───┬──┬──┬──┬───┘
-              │  │  │  │
-   ┌──────┐  │  │  │  │  ┌──────────┐
-   │ n8n  │◄─┘  │  │  └─►│Portainer │
-   │+Redis│     │  │     └──────────┘
-   └──────┘     │  │
-      ┌─────────┘  └──────────┐
-      ▼                       ▼
-┌──────────────┐ ┌──────────────┐ │ Odoo 16 │ │Evolution API │ │ + PostgreSQL │ │ + PostgreSQL │ │ + Redis Cache│ │ + Redis │ │ + Next.js │ └──────────────┘ └──────────────┘ │ Tailscale VPN ←── Secure remote access
+هذا المشروع يُحوّل سيرفر Ubuntu خام إلى بيئة إنتاج مُحصّنة بالكامل بأمر واحد (`sudo bash setup.sh`). يقوم بنشر حزمة تطبيقات متكاملة خلف Traefik Reverse Proxy مع شهادات SSL تلقائية، وحماية متعددة الطبقات، ووصول VPN آمن، وتحسينات للنظام — كل ذلك يُدار من خلال ملف `.env` واحد.
+
+Copy
+┌──────────────────────────────────────────────────────────┐ │ Server Boilerplate │ │ Production Stack in One Command │ ├──────────────────────────────────────────────────────────┤ │ │ │ ┌─────────────┐ ┌─────────────┐ ┌────────────────┐ │ │ │ Traefik │ │ Portainer │ │ Glances │ │ │ │ Reverse Proxy│ │ Docker Mgmt │ │ System Monitor│ │ │ │ Auto SSL │ │ UI │ │ Real-time │ │ │ └─────────────┘ └─────────────┘ └────────────────┘ │ │ │ │ ┌─────────────┐ ┌─────────────┐ ┌────────────────┐ │ │ │ n8n │ │ Odoo 16 │ │ Evolution API │ │ │ │ Automation │ │ ERP + │ │ WhatsApp + │ │ │ │ + Redis │ │ PostgreSQL │ │ PostgreSQL + │ │ │ └─────────────┘ │ + Redis │ │ Redis │ │ │ └─────────────┘ └────────────────┘ │ │ │ │ ┌─────────────┐ ┌────────────────────────────────┐ │ │ │ Next.js │ │ Tailscale VPN │ │ │ │ Frontend │ │ Secure Remote Access │ │ │ └─────────────┘ └────────────────────────────────┘ │ │ │ │ ┌──────────────────────────────────────────────────┐ │ │ │ UFW + CrowdSec + ClamAV + SSH Hardening │ │ │ │ + Kernel Tuning + Swap + Auto-Upgrades │ │ │ └──────────────────────────────────────────────────┘ │ └──────────────────────────────────────────────────────────┘
 
 
 ---
 
-## What's Included
+## 🏛 المعمارية
 
-### Applications
+              Internet
+                 │
+                 ▼
+           ┌───────────┐
+           │ Cloudflare │
+           │   (DNS)    │
+           └─────┬─────┘
+                 │
+     ┌───────────▼───────────┐
+     │    UFW Firewall       │  ← Cloudflare-only HTTP/HTTPS
+     │    CrowdSec IDS      │  ← حظر تلقائي للمهاجمين
+     └───────────┬───────────┘
+                 │
+     ┌───────────▼───────────┐
+     │      Traefik          │  ← Auto SSL (Let's Encrypt)
+     │   Reverse Proxy       │
+     └───┬───┬───┬───┬───┬──┘
+         │   │   │   │   │
+         ▼   ▼   ▼   ▼   ▼
+       n8n Odoo Evo Next Portainer  Glances
+            │    │
+            ▼    ▼
+       PostgreSQL + Redis (لكل خدمة)
 
-| Service | Description | Subdomain |
-|---------|-------------|-----------|
-| **n8n** | Workflow automation | `domain.com` |
-| **Odoo 16** | ERP system + PostgreSQL | `odoo.domain.com` |
-| **Evolution API** | WhatsApp integration + PostgreSQL + Redis | `evo.domain.com` |
-| **Next.js** | Frontend application | `next.domain.com` |
-| **Portainer** | Docker management UI | `portainer.domain.com` |
-| **Glances** | Real-time system monitoring | `monitor.domain.com` |
-
-### Infrastructure
-
-| Component | Purpose |
-|-----------|---------|
-| **Traefik** | Reverse proxy with automatic Let's Encrypt SSL |
-| **Tailscale** | Zero-config mesh VPN |
-| **Cloudflare Tunnel** | Secure tunnel (optional) |
-
-### Security
-
-| Layer | Tool | Function |
-|-------|------|----------|
-| Firewall | **UFW** | Cloudflare-only HTTP/HTTPS access |
-| IDS/IPS | **CrowdSec** | Auto-detect & ban attackers |
-| Antivirus | **ClamAV** | Daily malware scanning |
-| SSH | **Hardened** | Custom port, key-only auth, no root login |
-
-### System Optimizations
-
-| Feature | Details |
-|---------|---------|
-| **Swap** | 4GB swapfile |
-| **Kernel** | Optimized sysctl parameters |
-| **Updates** | Automatic security patches |
-| **Logging** | Logrotate + JSON Docker logs (10MB max) |
-| **Monitoring** | Resource alerts every 2 minutes via cron |
-| **Resource Limits** | CPU & memory limits per container |
+     ┌───────────────────────┐
+     │    Tailscale VPN      │  ← وصول آمن عن بُعد
+     └───────────────────────┘
 
 ---
 
-## Requirements
+## ✨ المميزات
 
-| Resource | Minimum |
-|----------|---------|
-| **OS** | Ubuntu 24.04 LTS |
-| **CPU** | 2 vCPUs |
-| **RAM** | 8 GB |
-| **Disk** | 100 GB SSD |
-| **Network** | Public IP + Domain with DNS configured |
+| المكون | الوصف |
+|--------|-------|
+| **ملف `.env` واحد** | جميع الإعدادات في مكان واحد — عدّل وشغّل |
+| **Traefik** | Reverse Proxy تلقائي مع شهادات Let's Encrypt SSL و Trusted IPs لـ Cloudflare |
+| **n8n** | أتمتة سير العمل مع Redis Cache ووضع الإنتاج |
+| **Odoo 16** | نظام ERP متكامل مع PostgreSQL مُحسّن و Redis Cache |
+| **Evolution API** | تكامل واتساب مع PostgreSQL و Redis مستقلين |
+| **Next.js** | تطبيق واجهة أمامية مع Redis Cache مشترك مع Odoo |
+| **Portainer** | إدارة Docker عبر واجهة ويب |
+| **Glances** | مراقبة موارد النظام بالوقت الفعلي |
+| **Tailscale VPN** | شبكة VPN بدون إعداد للوصول الآمن عن بُعد |
+| **Cloudflare Tunnel** | نفق Cloudflare آمن (اختياري) |
+| **UFW** | جدار حماية مقيّد بعناوين Cloudflare فقط لـ HTTP/HTTPS |
+| **CrowdSec** | نظام كشف ومنع اختراق تشاركي مع حظر تلقائي 24 ساعة |
+| **ClamAV** | فحص يومي ذكي للبرمجيات الخبيثة مع حجر تلقائي |
+| **SSH Hardening** | منفذ مخصص + مفتاح فقط + تعطيل Root + مستخدم واحد |
+| **Kernel Tuning** | تحسينات Sysctl للشبكة والأمان والأداء |
+| **Swap 4GB** | ملف Swap مع Swappiness مُحسّن |
+| **Auto-Upgrades** | تحديثات أمنية تلقائية |
+| **Resource Limits** | حدود CPU وذاكرة لكل حاوية |
+| **نظام مراقبة** | تنبيهات كل دقيقتين لـ CPU/RAM/Disk |
 
 ---
 
-## Quick Start
+## 📦 المتطلبات
 
-### 1. Clone the repository
+| المورد | الحد الأدنى |
+|--------|------------|
+| **نظام التشغيل** | Ubuntu 24.04 LTS |
+| **المعالج** | 2 vCPUs |
+| **الذاكرة** | 8 GB RAM |
+| **القرص** | 100 GB SSD |
+| **الشبكة** | عنوان IP عام + دومين مع DNS مُعدّ |
+
+### خدمات مطلوبة مسبقاً
+
+✅ دومين مُوجّه إلى IP السيرفر (عبر Cloudflare أو غيره) ✅ مفتاح Tailscale Auth Key من: https://login.tailscale.com/admin/settings/keys ✅ مفتاح SSH عام مُضاف للمستخدم على السيرفر
+
+
+---
+
+## 📂 البنية والملفات
+
+server-boilerplate/ │ ├── .env.example # قالب الإعدادات الرئيسي (انسخه إلى .env) ├── setup.sh # سكربت النشر الرئيسي │ ├── my-stack/ │ ├── docker-compose.yml # جميع خدمات التطبيقات │ ├── odoo-config/ │ │ └── odoo.conf # إعدادات Odoo ERP │ └── postgres-config/ │ └── postgresql.conf # تحسينات PostgreSQL │ ├── tailscale-stack/ │ └── docker-compose.yml # خدمة Tailscale VPN │ ├── security/ │ ├── setup-ufw.sh # قواعد جدار الحماية (عناوين Cloudflare) │ ├── setup-ssh.sh # تقوية SSH │ ├── setup-crowdsec.sh # تثبيت نظام كشف الاختراق │ ├── setup-clamav.sh # تثبيت مضاد الفيروسات │ └── crowdsec/ │ ├── acquis.yaml # مصادر السجلات المُراقبة │ └── profiles.yaml # ملفات تعريف الحظر │ ├── system/ │ ├── setup-swap.sh # إنشاء Swap 4GB │ ├── setup-sysctl.sh # تحسينات Kernel │ └── setup-auto-upgrades.sh # التحديثات الأمنية التلقائية │ ├── scripts/ │ ├── monitor_resources.sh # مراقبة CPU/RAM/Disk │ └── setup-cron.sh # تثبيت المهام المجدولة │ └── docs/ └── VARIABLES.md # مرجع كامل للمتغيرات
+
+
+---
+
+## 🚀 التثبيت والاستخدام
+
+### 1. استنساخ المشروع
 
 ```bash
 git clone https://github.com/mmsal512/server-boilerplate.git
 cd server-boilerplate
-2. Configure your environment
+2. إعداد ملف البيئة
 Copycp .env.example .env
 nano .env
-Fill in all required variables. See Variable Reference below.
+3. توليد كلمات مرور قوية
+Copy# لمفاتيح API
+openssl rand -hex 32
 
-3. Generate strong passwords
-Copy# Generate random passwords for your .env file
-openssl rand -hex 32    # For API keys
-openssl rand -base64 24 # For database passwords
-4. Deploy everything
+# لكلمات مرور قواعد البيانات
+openssl rand -base64 24
+4. تشغيل النشر
 Copysudo bash setup.sh
-The script will automatically:
+ماذا يفعل السكربت تلقائياً؟
+ترتيب التنفيذ مصمم بعناية عبر 6 مراحل:
 
-Update system & install dependencies
-Install Docker & create networks
-Harden SSH & configure UFW firewall
-Install CrowdSec IDS/IPS & ClamAV antivirus
-Generate all config files from your .env
-Deploy all Docker stacks
-Setup cron jobs & Cloudflare Tunnel (if configured)
-Project Structure
-server-boilerplate/
-│
-├── .env.example                    # Master config template (copy to .env)
-├── setup.sh                        # Main deployment script
-│
-├── my-stack/
-│   ├── docker-compose.yml          # All application services
-│   ├── odoo-config/
-│   │   └── odoo.conf               # Odoo ERP configuration
-│   └── postgres-config/
-│       └── postgresql.conf          # PostgreSQL tuning
-│
-├── tailscale-stack/
-│   └── docker-compose.yml          # Tailscale VPN service
-│
-├── security/
-│   ├── setup-ufw.sh                # Firewall rules (Cloudflare IPs)
-│   ├── setup-ssh.sh                # SSH hardening
-│   ├── setup-crowdsec.sh           # IDS/IPS installation
-│   ├── setup-clamav.sh             # Antivirus setup
-│   └── crowdsec/
-│       ├── acquis.yaml             # Log acquisition sources
-│       └── profiles.yaml           # Ban profiles
-│
-├── system/
-│   ├── setup-swap.sh               # 4GB swap creation
-│   ├── setup-sysctl.sh             # Kernel optimizations
-│   └── setup-auto-upgrades.sh      # Auto security updates
-│
-├── scripts/
-│   ├── monitor_resources.sh        # CPU/RAM/Disk monitoring
-│   └── setup-cron.sh               # Cron job installation
-│
-└── docs/
-    └── VARIABLES.md                # Complete variable reference
-Variable Reference
-Required Variables
-Variable	Description	Example
-DOMAIN_NAME	Your main domain	example.com
-SSL_EMAIL	Email for SSL certificates	admin@example.com
-GENERIC_TIMEZONE	Server timezone	Asia/Riyadh
-SSH_PORT	SSH port (avoid 22)	2026
-SSH_USERNAME	Non-root SSH user	mohammed
-EVOLUTION_DB_PASSWORD	Evolution PostgreSQL password	random
-ODOO_DB_PASSWORD	Odoo PostgreSQL password	random
-ODOO_ADMIN_PASSWORD	Odoo master password	random
-EVOLUTION_API_KEY	Evolution API auth key	openssl rand -hex 32
-TS_AUTHKEY	Tailscale auth key	Get from dashboard
-Optional Variables
-Variable	Default	Description
-EVOLUTION_REDIS_PREFIX_KEY	evolution_v2	Redis cache prefix
-TS_HOSTNAME	server-tailscale	Tailscale device name
-N8N_EXECUTIONS_PROCESS	main	n8n execution mode
-N8N_PUSH_BACKEND	websocketa	n8n real-time method
-CLOUDFLARE_TUNNEL_TOKEN	(empty)	Cloudflare Tunnel token
-NEXTJS_IMAGE	mohammed512/odoo-nextjs-frontend:latest	Frontend Docker image
-Full reference: 
+ المرحلة 1 — النظام
+ ├── 1. ✅ تحديث النظام وتثبيت الأدوات الأساسية
+ ├── 2. 💾 إعداد Swap (4GB)
+ ├── 3. ⚡ تحسينات Kernel (sysctl)
+ └── 4. 🔄 التحديثات الأمنية التلقائية
+
+ المرحلة 2 — Docker
+ └── 5. 🐳 تثبيت Docker + إنشاء شبكة web-public
+
+ المرحلة 3 — الأمان
+ ├── 6. 🔐 تقوية SSH (منفذ مخصص + مفتاح فقط)
+ ├── 7. 🧱 تفعيل UFW (Cloudflare فقط)
+ ├── 8. 🤖 تثبيت CrowdSec + Firewall Bouncer
+ └── 9. 🦠 تثبيت ClamAV + سكربت الفحص الذكي
+
+ المرحلة 4 — ملفات الإعداد
+ └── 10. 📝 توليد .env و .env.evolution و odoo.conf و tailscale .env
+
+ المرحلة 5 — النشر
+ ├── 11. 🚀 نشر my-stack (كل التطبيقات)
+ └── 12. 🌐 نشر tailscale-stack
+
+ المرحلة 6 — الإنهاء
+ ├── 13. ⏰ تثبيت المهام المجدولة (Cron)
+ └── 14. ☁️ تفعيل Cloudflare Tunnel (اختياري)
+⚙️ المتغيرات القابلة للتعديل
+المتغيرات المطلوبة
+المتغير	الوصف	مثال
+DOMAIN_NAME	الدومين الرئيسي	example.com
+SSL_EMAIL	بريد شهادات SSL	admin@example.com
+GENERIC_TIMEZONE	المنطقة الزمنية	Asia/Riyadh
+SSH_PORT	منفذ SSH (تجنّب 22)	2026
+SSH_USERNAME	مستخدم SSH غير root	mohammed
+EVOLUTION_DB_PASSWORD	كلمة مرور PostgreSQL لـ Evolution	عشوائية
+ODOO_DB_PASSWORD	كلمة مرور PostgreSQL لـ Odoo	عشوائية
+ODOO_ADMIN_PASSWORD	كلمة مرور المسؤول في Odoo	عشوائية
+EVOLUTION_API_KEY	مفتاح مصادقة Evolution API	openssl rand -hex 32
+TS_AUTHKEY	مفتاح مصادقة Tailscale	من لوحة التحكم
+المتغيرات الاختيارية
+المتغير	الافتراضي	الوصف
+EVOLUTION_REDIS_PREFIX_KEY	evolution_v2	بادئة Redis Cache
+TS_HOSTNAME	server-tailscale	اسم الجهاز في Tailscale
+N8N_EXECUTIONS_PROCESS	main	وضع تنفيذ n8n
+N8N_PUSH_BACKEND	websocketa	طريقة الاتصال الفوري لـ n8n
+CLOUDFLARE_TUNNEL_TOKEN	(فارغ)	رمز نفق Cloudflare — اتركه فارغاً للتخطي
+NEXTJS_IMAGE	mohammed512/odoo-nextjs-frontend:latest	صورة Docker للواجهة الأمامية
+المرجع الكامل: 
 docs/VARIABLES.md
 
-Post-Deployment
-Verify services are running
-Copydocker ps
-View logs
-Copy# All services
-docker compose -f my-stack/docker-compose.yml logs -f
+🔍 تفاصيل المكونات
+التطبيقات والنطاقات الفرعية
+الخدمة	الوصف	النطاق الفرعي
+n8n	أتمتة سير العمل	domain.com
+Odoo 16	نظام ERP + PostgreSQL	odoo.domain.com
+Evolution API	تكامل واتساب + PostgreSQL + Redis	evo.domain.com
+Next.js	تطبيق واجهة أمامية	next.domain.com
+Portainer	إدارة Docker عبر واجهة ويب	portainer.domain.com
+Glances	مراقبة النظام بالوقت الفعلي	monitor.domain.com
+Traefik — Reverse Proxy
+يعمل Traefik كبوابة رئيسية لجميع الخدمات. يتولى تلقائياً إصدار وتجديد شهادات SSL عبر Let's Encrypt (TLS Challenge)، مع إعادة توجيه HTTP إلى HTTPS بشكل إجباري. تم إعداد Trusted IPs لعناوين Cloudflare IPv4 لضمان تمرير عناوين الزوار الحقيقية عبر رؤوس X-Forwarded-For. جميع الخدمات تُكشف عبر Labels في Docker Compose بدون الحاجة لملف إعداد خارجي.
 
-# Specific service
-docker compose -f my-stack/docker-compose.yml logs -f n8n
-Check security status
-Copy# Firewall
-sudo ufw status
+جدار الحماية UFW
+يتم تقييد حركة HTTP/HTTPS لعناوين Cloudflare IP فقط، مما يمنع الوصول المباشر للسيرفر. يُسمح بـ SSH على المنفذ المخصص من أي مصدر. السياسة الافتراضية: حظر الوارد + سماح الصادر.
 
-# CrowdSec active bans
-sudo cscli decisions list
+Incoming:  DENY (default)
+           → Allow: SSH (منفذ مخصص) من أي مصدر
+           → Allow: HTTP/HTTPS من عناوين Cloudflare IPv4 + IPv6 فقط
+Outgoing:  ALLOW (default)
+CrowdSec — كشف ومنع الاختراق
+نظام حماية تشاركي يُراقب سجلات النظام وحاويات Docker. يتم تثبيت المجموعات التالية تلقائياً: crowdsecurity/linux, crowdsecurity/traefik, crowdsecurity/http-cve, crowdsecurity/whitelist-good-actors, crowdsecurity/pgsql. المصادر المُراقبة تشمل: سجلات المصادقة (/var/log/auth.log), سجلات النظام (/var/log/syslog), سجلات Traefik, سجلات Odoo, وسجلات PostgreSQL. يُحظر المهاجمون تلقائياً لمدة 24 ساعة عبر iptables.
 
-# CrowdSec alerts
-sudo cscli alerts list
-Tailscale status
-Copydocker exec tailscale tailscale status
-Container Resource Allocation
-Optimized for a 2 vCPU / 8GB RAM server:
+ClamAV — مضاد الفيروسات
+يعمل بنظام فحص ذكي بدون daemon لتوفير الموارد. يفحص المجلدات الحساسة يومياً (/root, /home, /tmp, /var/tmp, /etc) مع استثناء /proc, /sys, /dev, و /var/lib/docker. الملفات المُصابة تُنقل تلقائياً إلى /root/quarantine. يتم تحديث قاعدة بيانات التوقيعات يومياً وتنظيف الحجر شهرياً.
 
-Container	CPU Limit	Memory Limit	Memory Reserved
+SSH Hardening — تقوية SSH
+يتم إنشاء نسخة احتياطية من الإعدادات الأصلية قبل أي تعديل. الإعدادات المُطبّقة: منفذ مخصص (افتراضي 2026), مصادقة بالمفتاح العام فقط (PasswordAuthentication no), تعطيل دخول Root (PermitRootLogin no), السماح لمستخدم واحد فقط (AllowUsers), تعطيل X11 Forwarding, و ClientAlive كل 5 دقائق بحد أقصى 3 محاولات.
+
+Tailscale VPN
+يعمل كحاوية Docker مع network_mode: host وصلاحيات NET_ADMIN و NET_RAW للوصول الكامل للشبكة. يُنشئ شبكة Mesh VPN تلقائية بدون إعداد معقد، مما يتيح الوصول الآمن للسيرفر عن بُعد عبر شبكة Tailscale الخاصة.
+
+Cloudflare Tunnel (اختياري)
+إذا تم توفير CLOUDFLARE_TUNNEL_TOKEN، يتم تثبيت cloudflared وإنشاء خدمة systemd تعمل تلقائياً. يُوفّر نفقاً آمناً بين السيرفر و Cloudflare بدون الحاجة لفتح منافذ إضافية.
+
+تحسينات النظام
+يتم تطبيق تحسينات Kernel عبر /etc/sysctl.d/99-server-boilerplate.conf تشمل: تفعيل IP Forwarding (لـ Docker), تقييد kptr_restrict و ptrace_scope للأمان, رفع somaxconn إلى 4096, تفعيل fq_codel كـ qdisc افتراضي, و vm.max_map_count لـ 1M. يُنشأ ملف Swap بحجم 4GB مع swappiness=60. التحديثات الأمنية التلقائية مُفعّلة عبر unattended-upgrades.
+
+📊 موارد الحاويات
+مُحسّنة لسيرفر 2 vCPU / 8GB RAM:
+
+الحاوية	حد CPU	حد الذاكرة	الذاكرة المحجوزة
 Traefik	0.5	256 MB	128 MB
 Portainer	0.5	256 MB	64 MB
 Glances	—	1 GB	128 MB
 n8n	1.0	1.2 GB	512 MB
 Redis (n8n)	0.2	256 MB	64 MB
 Evolution API	0.5	512 MB	256 MB
-PostgreSQL (Evo)	0.5	512 MB	256 MB
-Redis (Evo)	0.2	256 MB	64 MB
-Odoo	1.5	2.5 GB	1 GB
+PostgreSQL (Evolution)	0.5	512 MB	256 MB
+Redis (Evolution)	0.2	256 MB	64 MB
+Odoo 16	1.5	2.5 GB	1 GB
 PostgreSQL (Odoo)	1.0	1.5 GB	1 GB
 Next.js	0.8	1 GB	256 MB
-Redis (Odoo cache)	0.2	256 MB	64 MB
+Redis (Odoo Cache)	0.2	256 MB	64 MB
 Tailscale	0.1	128 MB	64 MB
-Security Details
-Firewall (UFW)
-HTTP/HTTPS traffic is restricted to Cloudflare IP ranges only, preventing direct server access. SSH is allowed on the custom port from anywhere.
+ملاحظة: جميع الحاويات تستخدم json-file logging مع حد 10MB × 3 ملفات لمنع امتلاء القرص.
 
-CrowdSec
-Monitors Traefik access logs, Odoo logs, PostgreSQL logs, and system auth logs. Automatically bans malicious IPs for 24 hours using iptables.
+⏰ المهام المجدولة (Cron Jobs)
+التوقيت	المهمة	الوصف
+كل دقيقتين	monitor_resources.sh	مراقبة CPU/RAM/Disk مع تنبيهات عند تجاوز 85%
+يومياً 3:00 ص	find /root/quarantine -mtime +30 -delete	تنظيف الحجر (ملفات أقدم من 30 يوم)
+يومياً 4:00 ص	freshclam --quiet	تحديث قاعدة بيانات فيروسات ClamAV
+يومياً 5:00 ص	smart_clamscan.sh	فحص ذكي للمجلدات الحساسة
+✅ ما بعد التثبيت
+التحقق من حالة الخدمات
+Copy# عرض جميع الحاويات العاملة
+docker ps
 
-ClamAV
-Runs daily smart scans at 5 AM on critical directories (/root, /home, /tmp, /etc). Infected files are moved to /root/quarantine. Virus definitions update daily at 4 AM.
+# عرض سجلات جميع الخدمات
+docker compose -f my-stack/docker-compose.yml logs -f
 
-SSH Hardening
-Custom port, public key authentication only, password login disabled, root login disabled, single allowed user.
+# عرض سجلات خدمة محددة
+docker compose -f my-stack/docker-compose.yml logs -f n8n
+التحقق من حالة الأمان
+Copy# جدار الحماية
+sudo ufw status
 
-Cron Jobs
-Schedule	Job
-Every 2 min	Resource monitoring (CPU/RAM/Disk alerts)
-Daily 3 AM	Clean quarantine (files > 30 days)
-Daily 4 AM	Update ClamAV virus database
-Daily 5 AM	Smart ClamAV scan
-License
-This project is licensed under the MIT License.
+# عمليات الحظر النشطة في CrowdSec
+sudo cscli decisions list
+
+# تنبيهات CrowdSec
+sudo cscli alerts list
+حالة Tailscale
+Copydocker exec tailscale tailscale status
+الروابط بعد النشر
+n8n:        https://domain.com
+Odoo:       https://odoo.domain.com
+Evolution:  https://evo.domain.com
+Next.js:    https://next.domain.com
+Portainer:  https://portainer.domain.com
+Monitor:    https://monitor.domain.com
+🔧 استكشاف الأخطاء
+الخدمات لا تعمل بعد التثبيت
+Copy# تحقق من حالة الحاويات
+docker ps -a
+
+# أعد تشغيل الحزمة
+cd my-stack && docker compose down && docker compose up -d
+
+# تحقق من سجلات الأخطاء
+docker compose -f my-stack/docker-compose.yml logs --tail=50
+شهادات SSL لا تصدر
+Copy# تحقق من سجلات Traefik
+docker logs traefik_gateway --tail=100
+
+# تأكد أن المنافذ 80 و 443 مفتوحة
+sudo ufw status | grep -E "80|443"
+
+# تأكد أن DNS يُشير للسيرفر
+dig +short domain.com
+CrowdSec لا يعمل
+Copy# تحقق من الحالة
+cscli version
+cscli bouncers list
+
+# أعد تشغيل الخدمة
+systemctl restart crowdsec
+systemctl restart crowdsec-firewall-bouncer
+Docker لا يعمل
+Copysystemctl status docker
+journalctl -u docker --no-pager -n 50
+
+# إعادة التشغيل
+systemctl restart docker
+ClamAV — التحديث فشل
+Copy# تحديث يدوي
+freshclam --verbose
+
+# تحقق من السجل
+cat /var/log/clamav/smart_scan.log
+لا أستطيع الوصول عبر SSH
+Copy# تأكد من المنفذ الصحيح (الافتراضي 2026)
+ssh -p 2026 username@server-ip
+
+# إذا فقدت الوصول — استخدم كونسول VNC من مزود الاستضافة
+# ثم تحقق من إعدادات SSH:
+cat /etc/ssh/sshd_config | grep -E "Port|AllowUsers"
+sudo ufw status | grep SSH
+Tailscale لا يتصل
+Copy# تحقق من السجلات
+docker logs tailscale
+
+# تحقق من الحالة
+docker exec tailscale tailscale status
+
+# أعد التشغيل
+cd tailscale-stack && docker compose down && docker compose up -d
+مراقبة الموارد
+Copy# عرض سجل المراقبة
+tail -50 /var/log/resource_monitor.log
+
+# عرض التنبيهات فقط
+grep "ALERT" /var/log/resource_monitor.log
+🔒 ملاحظات أمنية
+تحذير: لا تُشغّل هذا السكربت على سيرفر إنتاج بدون اختباره أولاً على بيئة تجريبية.
+
+تأكد من وجود مفتاح SSH عام مُضاف للمستخدم قبل التشغيل — السكربت يُعطّل تسجيل الدخول بكلمة المرور
+احتفظ بطريقة وصول بديلة (VNC / KVM / Console) دائماً
+غيّر SSH_PORT من القيمة الافتراضية 2026 إذا كنت تُفضّل
+لا تُشارك ملف .env أبداً — يحتوي على كلمات المرور والمفاتيح
+أضفه إلى .gitignore (الملف .env.example فقط يُرفع للمستودع)
+استخدم كلمات مرور قوية مُولّدة عبر openssl rand
+راجع قواعد UFW بعد التثبيت: sudo ufw status numbered
+راقب تنبيهات CrowdSec بانتظام: sudo cscli alerts list
+تحقق من سجل الحجر: ls -la /root/quarantine/
+🤝 المساهمة
+المساهمات مُرحّب بها! إذا وجدت مشكلة أو لديك اقتراح:
+
+افتح Issue لوصف المشكلة أو الاقتراح
+أنشئ Fork من المشروع
+أنشئ فرع جديد: git checkout -b feature/my-feature
+قدّم التعديلات: git commit -m "Add my feature"
+ادفع الفرع: git push origin feature/my-feature
+افتح Pull Request
+📄 الرخصة
+هذا المشروع مرخّص تحت رخصة MIT.
+
+صُمم بعناية لنشر وحماية سيرفراتك بأمر واحد
+
+إذا أعجبك المشروع، لا تنسَ ⭐
+
+```
