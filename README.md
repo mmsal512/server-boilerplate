@@ -127,17 +127,25 @@ server-boilerplate/ │ ├── .env.example # قالب الإعدادات ا�
 ```bash
 git clone https://github.com/mmsal512/server-boilerplate.git
 cd server-boilerplate
-2. إعداد ملف البيئة
-Copycp .env.example .env
+```
+### 2. إعداد ملف البيئة
+```ini
+cp .env.example .env
 nano .env
-3. توليد كلمات مرور قوية
-Copy# لمفاتيح API
+```
+### 3. توليد كلمات مرور قوية
+لمفاتيح API
+```ini
 openssl rand -hex 32
-
-# لكلمات مرور قواعد البيانات
+```
+لكلمات مرور قواعد البيانات
+```ini
 openssl rand -base64 24
-4. تشغيل النشر
-Copysudo bash setup.sh
+```
+### 4. تشغيل النشر
+```ini
+sudo bash setup.sh
+```
 ماذا يفعل السكربت تلقائياً؟
 ترتيب التنفيذ مصمم بعناية عبر 6 مراحل:
 
@@ -166,7 +174,8 @@ Copysudo bash setup.sh
  المرحلة 6 — الإنهاء
  ├── 13. ⏰ تثبيت المهام المجدولة (Cron)
  └── 14. ☁️ تفعيل Cloudflare Tunnel (اختياري)
-⚙️ المتغيرات القابلة للتعديل
+## ⚙️ المتغيرات القابلة للتعديل
+
 المتغيرات المطلوبة
 المتغير	الوصف	مثال
 DOMAIN_NAME	الدومين الرئيسي	example.com
@@ -254,7 +263,7 @@ Tailscale	0.1	128 MB	64 MB
 يومياً 5:00 ص	smart_clamscan.sh	فحص ذكي للمجلدات الحساسة
 ✅ ما بعد التثبيت
 التحقق من حالة الخدمات
-Copy# عرض جميع الحاويات العاملة
+# عرض جميع الحاويات العاملة
 docker ps
 
 # عرض سجلات جميع الخدمات
@@ -263,7 +272,7 @@ docker compose -f my-stack/docker-compose.yml logs -f
 # عرض سجلات خدمة محددة
 docker compose -f my-stack/docker-compose.yml logs -f n8n
 التحقق من حالة الأمان
-Copy# جدار الحماية
+# جدار الحماية
 sudo ufw status
 
 # عمليات الحظر النشطة في CrowdSec
@@ -272,7 +281,7 @@ sudo cscli decisions list
 # تنبيهات CrowdSec
 sudo cscli alerts list
 حالة Tailscale
-Copydocker exec tailscale tailscale status
+docker exec tailscale tailscale status
 الروابط بعد النشر
 n8n:        https://domain.com
 Odoo:       https://odoo.domain.com
@@ -282,7 +291,7 @@ Portainer:  https://portainer.domain.com
 Monitor:    https://monitor.domain.com
 🔧 استكشاف الأخطاء
 الخدمات لا تعمل بعد التثبيت
-Copy# تحقق من حالة الحاويات
+# تحقق من حالة الحاويات
 docker ps -a
 
 # أعد تشغيل الحزمة
@@ -291,7 +300,7 @@ cd my-stack && docker compose down && docker compose up -d
 # تحقق من سجلات الأخطاء
 docker compose -f my-stack/docker-compose.yml logs --tail=50
 شهادات SSL لا تصدر
-Copy# تحقق من سجلات Traefik
+# تحقق من سجلات Traefik
 docker logs traefik_gateway --tail=100
 
 # تأكد أن المنافذ 80 و 443 مفتوحة
@@ -300,7 +309,7 @@ sudo ufw status | grep -E "80|443"
 # تأكد أن DNS يُشير للسيرفر
 dig +short domain.com
 CrowdSec لا يعمل
-Copy# تحقق من الحالة
+# تحقق من الحالة
 cscli version
 cscli bouncers list
 
@@ -308,19 +317,19 @@ cscli bouncers list
 systemctl restart crowdsec
 systemctl restart crowdsec-firewall-bouncer
 Docker لا يعمل
-Copysystemctl status docker
+systemctl status docker
 journalctl -u docker --no-pager -n 50
 
 # إعادة التشغيل
 systemctl restart docker
 ClamAV — التحديث فشل
-Copy# تحديث يدوي
+# تحديث يدوي
 freshclam --verbose
 
 # تحقق من السجل
 cat /var/log/clamav/smart_scan.log
 لا أستطيع الوصول عبر SSH
-Copy# تأكد من المنفذ الصحيح (الافتراضي 2026)
+# تأكد من المنفذ الصحيح (الافتراضي 2026)
 ssh -p 2026 username@server-ip
 
 # إذا فقدت الوصول — استخدم كونسول VNC من مزود الاستضافة
@@ -328,7 +337,7 @@ ssh -p 2026 username@server-ip
 cat /etc/ssh/sshd_config | grep -E "Port|AllowUsers"
 sudo ufw status | grep SSH
 Tailscale لا يتصل
-Copy# تحقق من السجلات
+# تحقق من السجلات
 docker logs tailscale
 
 # تحقق من الحالة
@@ -337,7 +346,7 @@ docker exec tailscale tailscale status
 # أعد التشغيل
 cd tailscale-stack && docker compose down && docker compose up -d
 مراقبة الموارد
-Copy# عرض سجل المراقبة
+# عرض سجل المراقبة
 tail -50 /var/log/resource_monitor.log
 
 # عرض التنبيهات فقط
